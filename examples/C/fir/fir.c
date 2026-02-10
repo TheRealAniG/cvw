@@ -13,7 +13,7 @@ void fir(int N, int M, double X[], double c[], double Y[]) {
   for (n=0; n<N; n++) {
       sum = 0;
       for (i=0; i<M; i++) {
-          sum += c[i]*X[n-i+(M-1)];
+        sum += c[i]*X[n-i+(M-1)];
       }
       Y[n] = sum;
   }
