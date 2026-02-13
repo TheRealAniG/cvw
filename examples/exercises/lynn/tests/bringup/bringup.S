@@ -3,6 +3,7 @@
 // kacassidy@hmc.edu
 // 1/21/2026
 
+.extern extended_test
 .extern add_test
 .extern or_test
 .extern and_test
@@ -14,6 +15,7 @@
     .globl return_or_test
     .globl return_and_test
     .globl return_sub_test
+    .globl return_extended_test
     .type  main, @function
 
 main:
@@ -29,4 +31,7 @@ return_and_test:
     j sub_test
 
 return_sub_test:
+    j extended_test
+
+return_extended_test:
     j pass

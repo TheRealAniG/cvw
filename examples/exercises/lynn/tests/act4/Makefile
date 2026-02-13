@@ -5,8 +5,8 @@
 
 RISCV_ARCH_TEST ?= $(WALLY)/addins/riscv-arch-test-cvw
 
-WORK_DIR        ?= $(CURDIR)/work
-STAMP           := $(WORK_DIR)/copy_stamp
+WORK_DIR         ?= $(CURDIR)/work
+STAMP            := $(WORK_DIR)/copy_stamp
 
 .PHONY: populate
 populate: $(STAMP)
@@ -14,11 +14,11 @@ populate: $(STAMP)
 $(STAMP): Makefile
 	@mkdir -p $(WORK_DIR)
 	@$(MAKE) -C $(RISCV_ARCH_TEST) \
-		CONFIG_FILES=$(RISCV_ARCH_TEST)/config/sail/sail-RVI20U32/test_config.yaml \
+		CONFIG_FILES=$(RISCV_ARCH_TEST)/config/ref/sail-rvi20_32/test_config.yaml \
 		EXTENSIONS=I,Zicntr,Zihpm,Zicsr,Zmmul \
 		DEBUG=True \
 		--jobs $$(nproc)
-	@cp -r $(RISCV_ARCH_TEST)/work/sail-RVI20U32/elfs/rv32i/I/* $(WORK_DIR)/
+	@cp -r $(RISCV_ARCH_TEST)/work/sail-rvi20_32/elfs/rv32i/I/* $(WORK_DIR)/
 	@touch $(STAMP)
 
 .PHONY: list-elfs
