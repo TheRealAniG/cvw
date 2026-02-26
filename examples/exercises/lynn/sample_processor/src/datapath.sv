@@ -8,9 +8,9 @@ module datapath(
         input   logic           ALUResultSrc, ResultSrc,
         input   logic [1:0]     ALUSrc,
         input   logic           RegWrite,
-        input   logic [1:0]     ImmSrc,
+        input   logic [2:0]     ImmSrc,
         input   logic [1:0]     ALUControl,
-        output  logic           Eq,
+        output  logic           BranchOp,
         input   logic [31:0]    PC, PCPlus4,
         input   logic [31:0]    Instr,
         output  logic [31:0]    IEUAdr, WriteData,
@@ -28,15 +28,41 @@ module datapath(
     extend ext(.Instr(Instr[31:7]), .ImmSrc, .ImmExt);
 
     // ALU logic
-    cmp cmp(.R1, .R2, .Eq);
+    cmp cmp(.R1, .R2, .Funct3(Instr[14:12]), .BranchOp(BranchOp));
 
     mux2 #(32) srcamux(R1, PC, ALUSrc[1], SrcA);
     mux2 #(32) srcbmux(R2, ImmExt, ALUSrc[0], SrcB);
 
-    alu alu(.SrcA, .SrcB, .ALUControl, .Funct3, .ALUResult, .IEUAdr);
+    alu alu(.SrcA, .SrcB, .ALUControl, .Funct3, .Funct7b5(Instr[30]), .ALUResult, .IEUAdr);
+
+    logic [31:0] SelectedData;
+    logic [7:0]  ByteVal;
+    logic [15:0] HalfVal;
+
+    // Use the lower bits of the address to shift the correct byte to the bottom
+    assign ByteVal = ReadData >> (IEUAdr[1:0] * 8);
+    assign HalfVal = ReadData >> (IEUAdr[1] * 16);
+
+    always_comb begin
+        case (Funct3)
+            3'b000:  SelectedData = {{24{ByteVal[7]}}, ByteVal};  // LB
+            3'b001:  SelectedData = {{16{HalfVal[15]}}, HalfVal}; // LH
+            3'b100:  SelectedData = {24'b0, ByteVal};             // LBU
+            3'b101:  SelectedData = {16'b0, HalfVal};             // LHU
+            3'b010:  SelectedData = ReadData;                     // LW
+            default: SelectedData = ReadData;
+        endcase
+    end
 
     mux2 #(32) ieuresultmux(ALUResult, PCPlus4, ALUResultSrc, IEUResult);
-    mux2 #(32) resultmux(IEUResult, ReadData, ResultSrc, Result);
+    mux2 #(32) resultmux(IEUResult, SelectedData, ResultSrc, Result);
 
-    assign WriteData = R2;
+    // SB repeats the byte 4 times, SH repeats the halfword twice
+    always_comb begin
+        case (Funct3[1:0])
+            2'b00:   WriteData = {4{R2[7:0]}};   // SB
+            2'b01:   WriteData = {2{R2[15:0]}};  // SH
+            default: WriteData = R2;             // SW
+        endcase
+    end
 endmodule

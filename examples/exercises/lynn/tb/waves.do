@@ -1,5 +1,31 @@
-# coremark_waves.do
-add wave sim:/testbench/dut/*
-
+add wave -noupdate -hex sim:/testbench/dut/clk
+add wave -noupdate -hex sim:/testbench/dut/reset
+add wave -noupdate -hex sim:/testbench/dut/PC
+add wave -noupdate -hex sim:/testbench/dut/Instr
+add wave -noupdate -hex sim:/testbench/dut/MemEn
+add wave -noupdate -hex sim:/testbench/dut/WriteEn
+add wave -noupdate -hex sim:/testbench/dut/WriteByteEn
+add wave -noupdate -hex sim:/testbench/dut/IEUAdr
+add wave -noupdate -hex sim:/testbench/dut/ReadData
+add wave -noupdate -hex sim:/testbench/dut/WriteData
+add wave -noupdate -hex sim:/testbench/dut/ieu/dp/ImmExt
+add wave -noupdate -hex sim:/testbench/dut/ieu/dp/R1
+add wave -noupdate -hex sim:/testbench/dut/ieu/dp/R2
+add wave -noupdate -hex sim:/testbench/dut/ieu/dp/SrcA
+add wave -noupdate -hex sim:/testbench/dut/ieu/dp/SrcB
+add wave -noupdate -hex sim:/testbench/dut/ieu/dp/ALUSrc
+add wave -noupdate -hex sim:/testbench/dut/ieu/dp/ALUControl
+add wave -noupdate -hex sim:/testbench/dut/ieu/dp/ALUResult
+add wave -noupdate -hex sim:/testbench/dut/ieu/dp/BranchOp
+add wave -noupdate -hex sim:/testbench/dut/PCSrc
+add wave -noupdate -hex sim:/testbench/dut/ieu/dp/Funct3
+add wave -noupdate -hex sim:/testbench/dut/ieu/dp/ByteVal
+add wave -noupdate -hex sim:/testbench/dut/ieu/dp/HalfVal
+add wave -noupdate -hex sim:/testbench/dut/ieu/dp/SelectedData
+add wave -noupdate -hex sim:/testbench/dut/ieu/dp/IEUResult
+add wave -noupdate -hex sim:/testbench/dut/ieu/dp/Result
+add wave -noupdate -hex sim:/testbench/dut/ieu/dp/RegWrite
+add wave -noupdate -hex sim:/testbench/dut/ieu/dp/ResultSrc
+add wave -noupdate -hex sim:/testbench/dut/ieu/dp/ALUResultSrc
 run -all
 view wave
