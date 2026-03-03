@@ -10,6 +10,7 @@ module datapath(
         input   logic           RegWrite,
         input   logic [2:0]     ImmSrc,
         input   logic [1:0]     ALUControl,
+        input   logic           LUI, //changed
         output  logic           BranchOp,
         input   logic [31:0]    PC, PCPlus4,
         input   logic [31:0]    Instr,
@@ -33,7 +34,7 @@ module datapath(
     mux2 #(32) srcamux(R1, PC, ALUSrc[1], SrcA);
     mux2 #(32) srcbmux(R2, ImmExt, ALUSrc[0], SrcB);
 
-    alu alu(.SrcA, .SrcB, .ALUControl, .Funct3, .Funct7b5(Instr[30]), .ALUResult, .IEUAdr);
+    alu alu(.SrcA, .SrcB, .ALUControl, .Funct3, .Funct7b5(Instr[30]), .ALUResult, .IEUAdr, .LUI);
 
     logic [31:0] SelectedData;
     logic [7:0]  ByteVal;

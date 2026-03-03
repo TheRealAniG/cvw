@@ -17,7 +17,7 @@ module regfile(
     // write third port on rising edge of clock (A3/WD3/WE3)
     // register 0 hardwired to 0
     always_ff @(posedge clk)
-        if (WE3) rf[A3] <= WD3;
+        if (WE3 && (A3 != 5'b0)) rf[A3] <= WD3;
 
     assign RD1 = (A1 != 0) ? rf[A1] : 0;
     assign RD2 = (A2 != 0) ? rf[A2] : 0;

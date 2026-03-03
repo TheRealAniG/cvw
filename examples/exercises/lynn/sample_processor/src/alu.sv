@@ -7,7 +7,8 @@ module alu(
         input   logic [1:0]     ALUControl,
         input   logic [2:0]     Funct3,
         input   logic           Funct7b5,
-        output  logic [31:0]    ALUResult, IEUAdr
+        output  logic [31:0]    ALUResult, IEUAdr,
+        input   logic           LUI //changed
     );
 
     logic [31:0] CondInvb, Sum, SLT;
@@ -30,15 +31,16 @@ module alu(
     assign SLT = {31'b0, LT};
     assign ALUFunct = Funct3 & {3{ALUOp}}; // Force ALUFunct to 0 to Add when ALUOp = 0
 
-    always_comb begin
-        case (ALUFunct)
+    always_comb begin //changed
+        if (LUI) ALUResult = SrcB;
+        else case (ALUFunct)
             3'b000: ALUResult = Sum;
             3'b001: ALUResult = SrcA << SrcB[4:0]; // SLL, SLLI
             3'b010: ALUResult = SLT;
             3'b100: ALUResult = SrcA ^ SrcB;
             3'b011: ALUResult = SLTU;  // Funct3 011 is SLTU
-            3'b101: if (Funct7b5) ALUResult = $signed(SrcA) >>> SrcB[4:0]; // SRA, SRAI
-                    else          ALUResult = SrcA >> SrcB[4:0];           // SRL, SRLI
+            3'b101: if (Funct7b5) ALUResult = $signed(SrcA) >>> SrcB[4:0]; // SRA
+            else          ALUResult = SrcA >> SrcB[4:0];           // SRL
             3'b110: ALUResult = SrcA | SrcB;
             3'b111: ALUResult = SrcA & SrcB;
             default: ALUResult = 32'bx;

@@ -20,7 +20,7 @@ module ifu(
         // override if provided
         void'($value$plusargs("ENTRY_ADDR=%h", entry_addr));
 
-        $display("[TB] ENTRY_ADDR = 0x%h", entry_addr);
+        // $display("[TB] ENTRY_ADDR = 0x%h", entry_addr);
     end
 
     always_ff @(posedge clk or posedge reset) begin
