@@ -19,7 +19,7 @@ module controller(
         output  logic [2:0]   ImmSrc,
         output  logic [1:0]   ALUControl,
         output  logic         MemEn,
-        output  logic         LUI //changed
+        output  logic         LUI
     `ifdef DEBUG
         , input   logic [31:0]  insn_debug
     `endif

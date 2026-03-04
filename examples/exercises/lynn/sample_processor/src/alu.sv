@@ -18,11 +18,16 @@ module alu(
 
     assign {Sub, ALUOp} = ALUControl;
 
+    // Force subtraction for SLT/SLTI (Funct3 = 010)
+    logic ForceSub;
+    assign ForceSub = Sub | (ALUOp & (Funct3 == 3'b010));
+
     // Add or subtract
-    assign CondInvb = Sub ? ~SrcB : SrcB;
-    assign Sum = SrcA + CondInvb + {{(31){1'b0}}, Sub};
+    assign CondInvb = ForceSub ? ~SrcB : SrcB;
+    assign Sum = SrcA + CondInvb + {{(31){1'b0}}, ForceSub};
     assign SLTU = {31'b0, (SrcA < SrcB)};
     assign IEUAdr = Sum; // Send this out to IFU and LSU
+
 
     // Set less than based on subtraction result
     assign Overflow = (SrcA[31] ^ SrcB[31]) & (SrcA[31] ^ Sum[31]);
