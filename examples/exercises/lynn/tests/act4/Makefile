@@ -20,7 +20,7 @@ $(STAMP): Makefile
 	@$(MAKE) -C $(RISCV_ARCH_TEST) \
 		CONFIG_FILES=$(CONFIG_FILES) \
 		WORKDIR=$(WORK_DIR) \
-		EXTENSIONS=I \
+		EXTENSIONS=I,Zicntr,Zihpm,Zmmul \
 		--jobs $$(nproc)
 	@rm -f $(ELFS_DIR)/Zicntr/*csrrc*
 	@rm -f $(ELFS_DIR)/Zihpm/*csrrc*
@@ -30,6 +30,6 @@ $(STAMP): Makefile
 list-elfs:
 	@find -L $(ELFS_DIR) -type f -name '*.elf' | sort
 
-.PHONY: clean
+.PHONY: cleanb
 clean:
 	rm -rf $(WORK_DIR)

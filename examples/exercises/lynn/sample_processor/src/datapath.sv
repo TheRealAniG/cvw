@@ -15,7 +15,9 @@ module datapath(
         input   logic [31:0]    PC, PCPlus4,
         input   logic [31:0]    Instr,
         output  logic [31:0]    IEUAdr, WriteData,
-        input   logic [31:0]    ReadData
+        input   logic [31:0]    ReadData,
+        input   logic           CSRSrc,
+        input   logic [31:0]    CSRReadData
     );
 
     logic [31:0] ImmExt;
@@ -34,15 +36,17 @@ module datapath(
     mux2 #(32) srcamux(R1, PC, ALUSrc[1], SrcA);
     mux2 #(32) srcbmux(R2, ImmExt, ALUSrc[0], SrcB);
 
-    alu alu(.SrcA, .SrcB, .ALUControl, .Funct3, .Funct7b5(Instr[30]), .ALUResult, .IEUAdr, .LUI);
+
+    alu alu(.SrcA, .SrcB, .ALUControl, .Funct3, .Funct7b5(Instr[30]),
+        .Funct7(Instr[6:0] == 7'b0110011 ? Instr[31:25] : 7'b0), .ALUResult, .IEUAdr, .LUI);
 
     logic [31:0] SelectedData;
     logic [7:0]  ByteVal;
     logic [15:0] HalfVal;
 
     // Use the lower bits of the address to shift the correct byte to the bottom
-    assign ByteVal = ReadData >> (IEUAdr[1:0] * 8);
-    assign HalfVal = ReadData >> (IEUAdr[1] * 16);
+    assign ByteVal = 8'(ReadData >> (IEUAdr[1:0] * 8));
+    assign HalfVal = 16'(ReadData >> (IEUAdr[1] * 16));
 
     always_comb begin
         case (Funct3)
@@ -56,7 +60,10 @@ module datapath(
     end
 
     mux2 #(32) ieuresultmux(ALUResult, PCPlus4, ALUResultSrc, IEUResult);
-    mux2 #(32) resultmux(IEUResult, SelectedData, ResultSrc, Result);
+
+    logic [31:0] IEUorMemResult;
+    mux2 #(32) resultmux(IEUResult, SelectedData, ResultSrc, IEUorMemResult);
+    mux2 #(32) csrmux(IEUorMemResult, CSRReadData, CSRSrc, Result);
 
     // SB repeats the byte 4 times, SH repeats the halfword twice
     always_comb begin

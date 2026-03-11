@@ -9,7 +9,7 @@ module controller(
         input   logic         BranchOp,
         input   logic [2:0]   Funct3,
         input   logic         Funct7b5,
-        input  logic  [1:0]   AddrOffset,
+        input   logic [1:0]   AddrOffset,
         output  logic         ALUResultSrc,
         output  logic         ResultSrc,
         output  logic [3:0]   WriteByteEn,
@@ -19,7 +19,8 @@ module controller(
         output  logic [2:0]   ImmSrc,
         output  logic [1:0]   ALUControl,
         output  logic         MemEn,
-        output  logic         LUI
+        output  logic         LUI,
+        output  logic         CSRSrc
     `ifdef DEBUG
         , input   logic [31:0]  insn_debug
     `endif
@@ -43,6 +44,7 @@ module controller(
             7'b1100111: controls = 13'b1_000_01_0_1_0_0_0_1_0; // jalr
             7'b0110111: controls = 13'b1_100_01_0_0_0_0_0_0_0; // lui
             7'b0010111: controls = 13'b1_100_11_0_0_0_0_0_0_0; //auipc
+            7'b1110011: controls = 13'b1_000_01_0_0_0_0_0_0_0; // csrrs
 
             default: begin
                 `ifdef DEBUG
@@ -67,6 +69,7 @@ module controller(
     // PCSrc logic
     assign PCSrc = Branch & BranchOp | Jump;
     assign LUI = (Op == 7'b0110111); //changed
+    assign CSRSrc = (Op == 7'b1110011) & (Funct3 == 3'b010);
 
     // MemWrite logic
     always_comb begin
